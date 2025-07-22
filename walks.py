@@ -3,7 +3,7 @@ import json
 import os
 from typing import List
 import requests
-import pandas as pd # pandas is still useful for other data structures, but not directly for maps now
+import pandas as pd
 import datetime
 
 # --- CONFIG ---
@@ -13,7 +13,7 @@ HOST_ID = "admin"
 HOST_PASS = "heritage123"
 GEMINI_API_KEY = "AIzaSyCc2HPWwk4YqF4iC3H8ceJNn8YHBUDwLkw"  # Replace with your Gemini API key
 HF_TOKEN = "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"  # Replace with your Hugging Face token
-GROQ_API_KEY = "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"  # Replace with your Groq API key
+GROQ_API_KEY = "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"  # Replace with your Groq API key
 TOGETHER_API_KEY = "tgp_v1_PMi3Pvc3z0vlW-lM5eStXtXvO26VOHO31TOSO0xq3YRaU"  # Replace with your Together API key
 UNSPLASH_ACCESS_KEY = "wTQeL98lH4lohWZkTw9Jdg4_ACKbZf7EVr_3pMvXvmk"  # Replace with your Unsplash Access Key
 
@@ -306,8 +306,9 @@ if user_type == "Host (Admin)":
         else:
             st.sidebar.markdown("<span class='previous-location'>None</span>", unsafe_allow_html=True)
         st.subheader("Edit Heritage Walk Route")
+        # --- FIX: Changed st.experimental_data_editor to st.data_editor ---
         route = load_route()
-        edited_route = st.experimental_data_editor(route, num_rows="dynamic", key="route_editor")
+        edited_route = st.data_editor(route, num_rows="dynamic", key="route_editor")
         if st.button("Save Route"):
             save_route(edited_route)
             st.success("Route updated! All clients will see the changes.")
@@ -416,17 +417,6 @@ else:
     st.info("You can ask about the current or previous stop, or general info about Ahmedabad's heritage walk.")
 
 display_timer()
-# Map rendering section removed
-# st.subheader("🗺️ Heritage Walk Map")
-# try:
-#     m = render_walk_map(current_location, previous_locations)
-#     st_folium(m, width=700, height=400)
-# except Exception as e:
-#     st.warning(f"Map could not be rendered: {e}")
-#     st.map(pd.DataFrame([
-#         {"lat": lat, "lon": lon, "stop": stop} for stop, (lat, lon) in STOP_COORDS.items()
-#     ]), latitude="lat", longitude="lon")
-
 
 # --- HOST: START WALK BUTTON ---
 if user_type == "Host (Admin)" and st.session_state.get("is_admin"):
