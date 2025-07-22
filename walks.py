@@ -3,9 +3,7 @@ import json
 import os
 from typing import List
 import requests
-import pandas as pd
-import folium
-from streamlit_folium import st_folium
+import pandas as pd # pandas is still useful for other data structures, but not directly for maps now
 import datetime
 
 # --- CONFIG ---
@@ -16,7 +14,7 @@ HOST_PASS = "heritage123"
 GEMINI_API_KEY = "AIzaSyCc2HPWwk4YqF4iC3H8ceJNn8YHBUDwLkw"  # Replace with your Gemini API key
 HF_TOKEN = "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"  # Replace with your Hugging Face token
 GROQ_API_KEY = "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"  # Replace with your Groq API key
-TOGETHER_API_KEY = "tgp_v1_PMi3Pvc3z0vlW-lM5eStXtO26VOHO31TOSO0xq3YRaU"  # Replace with your Together API key
+TOGETHER_API_KEY = "tgp_v1_PMi3Pvc3z0vlW-lM5eStXtXvO26VOHO31TOSO0xq3YRaU"  # Replace with your Together API key
 UNSPLASH_ACCESS_KEY = "wTQeL98lH4lohWZkTw9Jdg4_ACKbZf7EVr_3pMvXvmk"  # Replace with your Unsplash Access Key
 
 # --- MODEL CHOICE ---
@@ -183,33 +181,9 @@ def get_unsplash_image(query):
         pass
     return "https://placehold.co/400x200?text=No+Image"
 
-# --- DATA FOR MAP, IMAGES, AND TRIVIA ---
-STOP_COORDS = {
-    "Swaminarayan Temple, Kalupur": (23.0286, 72.6036),
-    "Kavi Dalpatram Chowk": (23.0292, 72.6041),
-    "Lambeshwar Ni Pol": (23.0297, 72.6045),
-    "Calico Dome": (23.0301, 72.6050),
-    "Kala Ramji Mandir": (23.0305, 72.6054),
-    "Shantinathji Mandir, Haja Patel Ni Pol": (23.0309, 72.6058),
-    "Kuvavala Khancha, Doshivada Ni Pol": (23.0313, 72.6062),
-    "Secret Passage, Shantinath Ni Pol": (23.0317, 72.6066),
-    "Zaveri Vad": (23.0321, 72.6070),
-    "Sambhavnath Ni Khadki": (23.0325, 72.6074),
-    "Chaumukhji Ni Pol": (23.0329, 72.6078),
-    "Astapadji Derasar": (23.0333, 72.6082),
-    "Harkunvar Shethani Ni Haveli": (23.0337, 72.6086),
-    "Dodiya Haveli": (23.0341, 72.6090),
-    "Fernandez Bridge (Gandhi Road)": (23.0345, 72.6094),
-    "Chandla Ol": (23.0349, 72.6098),
-    "Muharat Pol": (23.0353, 72.6102),
-    "Ahmedabad Stock Exchange": (23.0357, 72.6106),
-    "Manek Chowk": (23.0361, 72.6110),
-    "Rani-no-Haziro": (23.0365, 72.6114),
-    "Badshah-no-Haziro": (23.0369, 72.6118),
-    "Jami Masjid": (23.0373, 72.6122),
-}
+# --- DATA FOR IMAGES, AND TRIVIA (STOP_COORDS removed) ---
 STOP_IMAGES = {
-    stop: f"https://placehold.co/400x200?text={stop.replace(' ', '+')}" for stop in STOP_COORDS
+    stop: f"https://placehold.co/400x200?text={stop.replace(' ', '+')}" for stop in DEFAULT_ROUTE
 }
 STOP_TRIVIA = {
     "Swaminarayan Temple, Kalupur": ("In which year was the Swaminarayan Temple built?", "1822"),
@@ -231,31 +205,8 @@ def save_start_time(start_time):
     with open(START_TIME_FILE, "w") as f:
         json.dump(start_time, f)
 
-# --- MAP ---
-def render_walk_map(current_location, previous_locations):
-    coords = [STOP_COORDS[stop] for stop in STOP_COORDS]
-    stops = list(STOP_COORDS.keys())
-    # Find index of current location
-    if current_location in stops:
-        curr_idx = stops.index(current_location)
-    else:
-        curr_idx = -1
-    # Create folium map centered on the route
-    avg_lat = sum([lat for lat, lon in coords]) / len(coords)
-    avg_lon = sum([lon for lat, lon in coords]) / len(coords)
-    m = folium.Map(location=[avg_lat, avg_lon], zoom_start=16)
-    # Add all pins
-    for i, (stop, (lat, lon)) in enumerate(STOP_COORDS.items()):
-        color = "red" if stop == current_location else ("blue" if stop in previous_locations else "gray")
-        folium.Marker([lat, lon], popup=f"{i+1}. {stop}", icon=folium.Icon(color=color)).add_to(m)
-    # Draw route up to current location
-    if curr_idx >= 0:
-        folium.PolyLine(coords[:curr_idx+1], color="green", weight=5, opacity=0.8).add_to(m)
-        if curr_idx < len(coords)-1:
-            folium.PolyLine(coords[curr_idx:len(coords)], color="gray", weight=3, opacity=0.5, dash_array="5,10").add_to(m)
-    else:
-        folium.PolyLine(coords, color="gray", weight=3, opacity=0.5, dash_array="5,10").add_to(m)
-    return m
+# --- MAP (REMOVED) ---
+# The render_walk_map function and related imports are removed.
 
 # --- TIMER DISPLAY ---
 def display_timer():
@@ -465,15 +416,17 @@ else:
     st.info("You can ask about the current or previous stop, or general info about Ahmedabad's heritage walk.")
 
 display_timer()
-st.subheader("🗺️ Heritage Walk Map")
-try:
-    m = render_walk_map(current_location, previous_locations)
-    st_folium(m, width=700, height=400)
-except Exception as e:
-    st.warning(f"Map could not be rendered: {e}")
-    st.map(pd.DataFrame([
-        {"lat": lat, "lon": lon, "stop": stop} for stop, (lat, lon) in STOP_COORDS.items()
-    ]), latitude="lat", longitude="lon")
+# Map rendering section removed
+# st.subheader("🗺️ Heritage Walk Map")
+# try:
+#     m = render_walk_map(current_location, previous_locations)
+#     st_folium(m, width=700, height=400)
+# except Exception as e:
+#     st.warning(f"Map could not be rendered: {e}")
+#     st.map(pd.DataFrame([
+#         {"lat": lat, "lon": lon, "stop": stop} for stop, (lat, lon) in STOP_COORDS.items()
+#     ]), latitude="lat", longitude="lon")
+
 
 # --- HOST: START WALK BUTTON ---
 if user_type == "Host (Admin)" and st.session_state.get("is_admin"):
