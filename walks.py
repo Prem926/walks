@@ -10,7 +10,7 @@ import datetime
 ROUTE_FILE = "route.json"
 CURRENT_LOCATION_FILE = "current_location.json"
 HOST_ID = "admin"
-HOST_PASS = "heritage123"
+HOST_PASS = "123"
 GEMINI_API_KEY = "AIzaSyCc2HPWwk4YqF4iC3H8ceJNn8YHBUDwLkw"  # Replace with your Gemini API key
 HF_TOKEN = "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"  # Replace with your Hugging Face token
 GROQ_API_KEY = "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"  # Replace with your Groq API key
