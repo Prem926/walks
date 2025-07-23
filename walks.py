@@ -504,7 +504,7 @@ else: # Client View
                 with st.expander("Show info about this site"):
                     # Show image
                     unsplash_img = get_unsplash_image(f"{stop} Ahmedabad heritage site")
-                    st.image(unsplash_img, use_column_width=True, caption=f"Image of {stop}")
+                    st.image(unsplash_img, use_container_width=True, caption=f"Image of {stop}")
                     
                     with st.spinner("Fetching info..."):
                         info = get_site_info(stop, model_choice)
