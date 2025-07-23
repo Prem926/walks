@@ -17,7 +17,7 @@ import datetime
 # TOGETHER_API_KEY = "your_together_api_key"
 # UNSPLASH_ACCESS_KEY = "your_unsplash_access_key"
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyCc2HPWwk4YqF4iC3H8ceJNn8YHBUDwLkw")  # Replace with your Gemini API key
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyA2ZBhJvbyCrHnDg2JAT3U9DeWj7igqh6U")  # Replace with your Gemini API key
 HF_TOKEN = os.getenv("HF_TOKEN", "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")  # Replace with your Hugging Face token
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "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")  # Replace with your Groq API key
 TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY", "tgp_v1_dYnK0qKt95ZakntPQGIhAmGHe2T8GvOREk6zHwIypEE")  # Replace with your Together API key
